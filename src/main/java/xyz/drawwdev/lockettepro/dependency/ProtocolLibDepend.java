@@ -1,6 +1,7 @@
-package xyz.drawwdev.lockettepro;
+package xyz.drawwdev.lockettepro.dependency;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLib;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
@@ -12,30 +13,62 @@ import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import xyz.drawwdev.lockettepro.Config;
+import xyz.drawwdev.lockettepro.LockettePro;
+import xyz.drawwdev.lockettepro.LocketteProAPI;
+import xyz.drawwdev.lockettepro.Utils;
 
 import java.util.List;
 
-public class DependencyProtocolLib {
+public class ProtocolLibDepend implements Dependency {
 
-    public static void setUpProtocolLib(Plugin plugin){
-        if (Config.protocollib) {
-            addTileEntityDataListener(plugin);
-            addMapChunkListener(plugin);
-        }
+    private ProtocolLib protocolLib = null;
+
+    private String version;
+
+    @Override
+    public String getName() {
+        return "protocollib";
     }
-    
-    public static void cleanUpProtocolLib(Plugin plugin){
+
+    @Override
+    public boolean isRequired() {
+        return false;
+    }
+
+    @Override
+    public String getVersion() {
+        return this.version;
+    }
+
+    @Override
+    public boolean load() {
+        if (!Config.protocollib) return true;
+        Plugin protocolLibPlugin = Bukkit.getServer().getPluginManager().getPlugin("ProtocolLib");
+        if (protocolLibPlugin == null) return false;
+        if (!(protocolLibPlugin instanceof ProtocolLib)) return false;
+        protocolLib = (ProtocolLib) protocolLibPlugin;
+        this.version = protocolLibPlugin.getDescription().getVersion();
+        return true;
+    }
+
+    public void setup() {
+        if (Config.protocollib) return;
+        this.addTileEntityDataListener();
+        this.addMapChunkListener();
+    }
+
+    public void cleanUp() {
+        if (protocolLib == null) return;
         try {
-            if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")){
-                ProtocolLibrary.getProtocolManager().removePacketListeners(plugin);
-            }
+            ProtocolLibrary.getProtocolManager().removePacketListeners(LockettePro.getInstance());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    public static void addTileEntityDataListener(Plugin plugin){
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(plugin, ListenerPriority.LOW, PacketType.Play.Server.TILE_ENTITY_DATA) {
+
+    private void addTileEntityDataListener() {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(LockettePro.getInstance(), ListenerPriority.LOW, PacketType.Play.Server.TILE_ENTITY_DATA) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
@@ -45,9 +78,9 @@ public class DependencyProtocolLib {
             }
         });
     }
-    
-    public static void addMapChunkListener(Plugin plugin){
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(plugin, ListenerPriority.LOW, PacketType.Play.Server.MAP_CHUNK) {
+
+    private void addMapChunkListener() {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(LockettePro.getInstance(), ListenerPriority.LOW, PacketType.Play.Server.MAP_CHUNK) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
@@ -61,7 +94,7 @@ public class DependencyProtocolLib {
         });
     }
 
-    public static void onSignSend(Player player, NbtCompound nbtcompound) {
+    public static void onSignSend(@SuppressWarnings("unused") final Player player, final NbtCompound nbtcompound) {
         String raw_line1 = nbtcompound.getString("Text1");
         if (LocketteProAPI.isLockStringOrAdditionalString(Utils.getSignLineFromUnknown(raw_line1))) {
             // Private line
@@ -80,5 +113,8 @@ public class DependencyProtocolLib {
             }
         }
     }
-    
+
+    public ProtocolLib getProtocolLib() {
+        return protocolLib;
+    }
 }

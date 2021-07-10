@@ -1,4 +1,4 @@
-package xyz.drawwdev.lockettepro;
+package xyz.drawwdev.lockettepro.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Tag;
@@ -10,7 +10,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import xyz.drawwdev.lockettepro.LocketteProAPI;
+import xyz.drawwdev.lockettepro.Utils;
 
+@SuppressWarnings("unused")
 public class BlockDebugListener implements Listener {
     
     @SuppressWarnings("deprecation")
@@ -33,7 +36,8 @@ public class BlockDebugListener implements Listener {
                 p.sendMessage(" - created: " + Utils.getCreatedFromLine(((Sign)b.getState()).getLine(0)));
                 p.sendMessage(" - now     : " + (int)(System.currentTimeMillis()/1000));
             }
-            
+
+            //noinspection UnnecessaryToStringCall
             p.sendMessage("Block: " + b.getType().toString() + " " + b.getData());
             
             if (Tag.WALL_SIGNS.isTagged(b.getType())){
