@@ -1,4 +1,4 @@
-package me.crafter.mc.lockettepro;
+package xyz.drawwdev.lockettepro;
 
 import java.util.Iterator;
 

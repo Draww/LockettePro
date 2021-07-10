@@ -1,4 +1,4 @@
-package me.crafter.mc.lockettepro;
+package xyz.drawwdev.lockettepro;
 
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.common.cache.CacheBuilder;

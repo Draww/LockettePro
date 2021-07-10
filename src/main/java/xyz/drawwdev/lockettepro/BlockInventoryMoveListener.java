@@ -1,4 +1,4 @@
-package me.crafter.mc.lockettepro;
+package xyz.drawwdev.lockettepro;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
