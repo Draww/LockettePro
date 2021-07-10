@@ -94,7 +94,7 @@
                 <version>2.4.1</version>
                 <configuration>
                     <!--suppress UnresolvedMavenProperty -->
-                    <finalName>${project.artifactId}-${project.version}-${build.type}-${git.commit.id.abbrev}-shade</finalName>
+                    <finalName>${project.artifactId}-${project.version}-shade</finalName>
                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
                 </configuration>
